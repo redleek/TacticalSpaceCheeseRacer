@@ -26,7 +26,6 @@ namespace TacticalSpaceCheeseRacer
         // Define constants we will want to use throughout the program.
         const int MAX_PLAYERS = 4;
         const int MIN_PLAYERS = 2;
-        const string BAD_CLA = "ERROR: Command line argument not recognised.";
 
         // Initialise an array to store each player.
         static Player[] players;
@@ -118,17 +117,17 @@ namespace TacticalSpaceCheeseRacer
         /// Parse command line arguments when the program is run.
         /// </summary>
         /// <param name="args">Array that contains the arguments.</param>
-        static int ParseCLA(string[] args)
+        static void ParseCLA(string[] args)
         {
             try
             {
                 if (args == null)
                 {
                     // Place holder so the else doesn't execute if args is null.
-                    return 0;
+                    return;
                 }
             }
-            catch
+            finally
             {
                 try
                 {
@@ -154,12 +153,8 @@ namespace TacticalSpaceCheeseRacer
                 {
                     // Leave blank to continue.
                 }
-                finally
-                {
-                    throw new Exception(BAD_CLA);
-                }
             }
-            return 0;
+            return;
         }
 
         // A method to set up the players and resources of the game. Options available for re-initialising variables.
