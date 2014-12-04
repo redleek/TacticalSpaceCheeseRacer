@@ -333,9 +333,13 @@ namespace TacticalSpaceCheeseRacer
             Console.WriteLine("{0} has moved to square {1}.", players[playerno].name, players[playerno].position);
         }
 
+        /// <summary>
+        /// Make the player who rolled the tactics dice to change to someone else's position.
+        /// </summary>
+        /// <param name="playerno">The number of the current player.</param>
         static void Power5(int playerno)
         {
-            // Use do while to be able to return back to top if user tries to swap with themselves.
+            // Use do while to be able to return back to top if user tries to move to their own position.
             do
             {
                 Console.WriteLine("Players and their positions:");
@@ -346,7 +350,7 @@ namespace TacticalSpaceCheeseRacer
                 int newposition = ReadNumber("Please enter a player number to swap to: ", no_of_players, 1) - 1;
                 if (newposition == playerno)
                 {
-                    Console.WriteLine("You cannot swap with yourself.");
+                    Console.WriteLine("You cannot move to the position you are already on.");
                     continue;
                 }
                 players[playerno].position = players[newposition].position;
@@ -361,17 +365,27 @@ namespace TacticalSpaceCheeseRacer
         /// <param name="playerno">The number of the current player.</param>
         static void Power6(int playerno)
         {
-            Console.WriteLine("Players and their positions:");
-            for (int playercount = 0; playercount < no_of_players; playercount++)
+            // Use do while to be able to return back to top if user tries to swap with themselves.
+            do
             {
-                Console.WriteLine("{0}. {1} - {2}", playercount + 1, players[playercount].name, players[playercount].position);
-            }
-            int playerno2swap = ReadNumber("Please enter a player number to swap with: ", 4, 1) - 1;
-            int newposition = players[playerno2swap].position;
-            players[playerno2swap].position = players[playerno].position;
-            players[playerno].position = newposition;
-            PrintPosition(playerno2swap);
-            PrintPosition(playerno);
+                Console.WriteLine("Players and their positions:");
+                for (int playercount = 0; playercount < no_of_players; playercount++)
+                {
+                    Console.WriteLine("{0}. {1} - {2}", playercount + 1, players[playercount].name, players[playercount].position);
+                }
+                int playerno2swap = ReadNumber("Please enter a player number to swap with: ", 4, 1) - 1;
+                if (playerno2swap == playerno)
+                {
+                    Console.WriteLine("You cannot swap position with yourself.");
+                    continue;
+                }
+                int newposition = players[playerno2swap].position;
+                players[playerno2swap].position = players[playerno].position;
+                players[playerno].position = newposition;
+                PrintPosition(playerno2swap);
+                PrintPosition(playerno);
+                break;
+            } while (true);
         }
         #endregion
         #endregion
@@ -412,6 +426,7 @@ namespace TacticalSpaceCheeseRacer
                         else
                         {
                             // Do tactical stuff later.
+                            Power6(playercount);
                             //PrintPosition(playercount);
                         }
 
