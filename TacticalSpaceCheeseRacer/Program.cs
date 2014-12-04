@@ -36,11 +36,10 @@ namespace TacticalSpaceCheeseRacer
         // Initialise the 'won' game state to false so the main loop is enabled.
         static bool gamewon = false;
 
-        // An array of testing values for dice roll and player movement.
-        static int[] testdice = new int[8] { -50, -1, 0, 1, 3, 6, 7, 80 };
-
         // Represents the status of debug mode
+# if DEBUG
         static bool debugmode = false;
+# endif
 
         // Create an instance of random number so we don't get the same values in a short space of time.
         static Random randomnum = new Random();
@@ -129,6 +128,7 @@ namespace TacticalSpaceCheeseRacer
             }
             finally
             {
+# if DEBUG
                 try
                 {
                     // Enable the testing variables.
@@ -142,6 +142,7 @@ namespace TacticalSpaceCheeseRacer
                 {
                     // Leave blank to continue.
                 }
+# endif
                 try
                 {
                     if (args[0] == "--help" || args[0] == "-h")
@@ -183,18 +184,22 @@ namespace TacticalSpaceCheeseRacer
                 // Counter used for asking for a specific player name.
                 int player_number_count = 1;
                 // Read in the players' names.
-                for (int i = no_of_players - 1; i >= 0; i--)
+                for (int i = 0; i < no_of_players; i++)
                 {
                     Console.Write("Please enter the name of player {0}: ", player_number_count);
                     players[i].name = Console.ReadLine();
                     player_number_count++;
                 }
-                /* Check that the names are being stored correctly.
-                for (int i = no_of_players - 1; i >= 0; i--)
+
+                // Check that the names are being stored correctly.
+# if DEBUG
+                Console.WriteLine("Stored players:");
+                for (int i = 0; i < no_of_players; i++)
                 {
                     Console.WriteLine(players[i].name);
                 }
-                */
+# endif
+
             }
         }
         #endregion
@@ -210,43 +215,34 @@ namespace TacticalSpaceCheeseRacer
         }
 
         /// <summary>
-        /// Uses some pre-set testing variables to use for passing off as dice rolls.
-        /// </summary>
-        /// <returns>A testing dice roll.</returns>
-        static int DebugDiceRoll()
-        {
-            return 0;
-        }
-
-        // Execute procedures required for a player's turn.
-        /// <summary>
         /// Execute procedures required for a player's turn including a dice roll and a tactical dice roll.
         /// </summary>
         /// <param name="player">The specified player who's turn it is.</param>
-        static void PlayerTurn(Player player)
+        static void PlayerTurn(int playerno)
         {
-            // Roll the dice.
-            if (debugmode)
-            {
-                DebugDiceRoll();
-            }
-            else
-            {
-                int roll = RandDiceRoll();
-            }
-            // Check if they have won.
+            // Rolls the dice by getting value from user (debug mode) or randomly generated.
+#if DEBUG
+            int roll = ReadNumber("Please enter a value for the dice roll: ", 65535, -65535);
+# else
+            int roll = RandDiceRoll();
+#endif
+            players[playerno].position += roll;
+            Console.WriteLine("{0}'s new position on the board is {1}.", players[playerno].name, players[playerno].position);
         }
         #endregion
+
 
         static void Main(string[] args)
         {
             // Parse the command line arguments given to the program.
             ParseCLA(args);
 
+# if DEBUG
             if (debugmode)
             {
                 Console.WriteLine("Entering in Debug mode...");
             }
+# endif
 
             // Set up the game for the first time. Reinitialise and use of old names will never need to be set on the first set up.
             SetupGame(false, false);
@@ -256,7 +252,18 @@ namespace TacticalSpaceCheeseRacer
             {
                 for (int playercount = 0; playercount < no_of_players; playercount++)
                 {
-                    PlayerTurn(players[playercount]);
+                    PlayerTurn(playercount);
+                    // Check if the current player has won.
+                    if (players[playercount].position >= 64)
+                    {
+                        gamewon = true;
+                        Console.WriteLine("{0} has won the game!", players[playercount].name);
+                        break;
+                    }
+                    else
+                    {
+                        // Do tactical stuff later.
+                    }
                 }
             } while (!gamewon);
 
