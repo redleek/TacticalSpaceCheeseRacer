@@ -26,6 +26,8 @@ namespace TacticalSpaceCheeseRacer
         // Define constants we will want to use throughout the program.
         const int MAX_PLAYERS = 4;
         const int MIN_PLAYERS = 2;
+        const int BOARD_UP_BOUND = 64;
+        const int BOARD_LWR_BOUND = 0;
 
         // Initialise an array to store each player.
         static Player[] players;
@@ -87,7 +89,8 @@ namespace TacticalSpaceCheeseRacer
             do
             {
                 Console.Write(prompt);
-                // Try and get integer from the user, if it is larger than the maximum that a 32-bit integer can hold, tell the user and get them to re-enter. This also works when the user has entered characters.
+                // Try and get integer from the user, if it is larger than the maximum that a 32-bit integer can hold, tell the user and get them to re-enter.
+                // This also works when the user has entered characters.
                 try
                 {
                     result = int.Parse(Console.ReadLine());
@@ -108,6 +111,20 @@ namespace TacticalSpaceCheeseRacer
                 }
             }
             while (true);
+        }
+
+        /// <summary>
+        /// Reads in the names of the game players from the user(s).
+        /// </summary>
+        static void ReadNames()
+        {
+            int player_number_count = 1;
+            for (int playercount = 0; playercount < no_of_players; playercount++)
+            {
+                Console.Write("Please enter the name of player {0}: ", player_number_count);
+                players[playercount].name = Console.ReadLine();
+                player_number_count++;
+            }
         }
         #endregion
 
@@ -168,6 +185,24 @@ namespace TacticalSpaceCheeseRacer
         {
             if (reinitialise)
             {
+                // Reset all player positions back to the start of the board.
+                for (int playercount = 0; playercount < no_of_players; playercount++)
+                {
+                    players[playercount].position = BOARD_LWR_BOUND;
+                }
+                if (ReadYN("Use the same number of players?: "))
+                {
+                    if (!use_old_names)
+                    {
+                        ReadNames();
+                    }
+                }
+                else
+                {
+                    no_of_players = ReadNumber("Please enter the new number of players: ", MAX_PLAYERS, MIN_PLAYERS);
+                    players = new Player[no_of_players];
+                    ReadNames();
+                }
                 /*
                 bool player_nums_same = ReadYN("Use same number of players?: ");
                 if (player_nums_same)
@@ -183,23 +218,17 @@ namespace TacticalSpaceCheeseRacer
                 //Console.WriteLine("The number of players is: {0}", no_of_players);
                 players = new Player[no_of_players];
 
-                // Counter used for asking for a specific player name.
-                int player_number_count = 1;
                 // Read in the players' names.
-                for (int i = 0; i < no_of_players; i++)
-                {
-                    Console.Write("Please enter the name of player {0}: ", player_number_count);
-                    players[i].name = Console.ReadLine();
-                    player_number_count++;
-                }
+                ReadNames();
 
                 // Check that the names are being stored correctly.
 # if DEBUG
                 Console.WriteLine("Stored players:");
-                for (int i = 0; i < no_of_players; i++)
+                for (int playercount = 0; playercount < no_of_players; playercount++)
                 {
-                    Console.WriteLine(players[i].name);
+                    Console.WriteLine(players[playercount].name);
                 }
+                Console.WriteLine();
 # endif
 
             }
@@ -223,11 +252,20 @@ namespace TacticalSpaceCheeseRacer
         static void PlayerTurn(int playerno)
         {
             // Rolls the dice by getting value from user (debug mode) or randomly generated.
+            int roll = 0;
 #if DEBUG
-            int roll = ReadNumber("Please enter a value for the dice roll: ", 65535, -65535);
+            if (debugmode)
+            {
+                roll = ReadNumber("Please enter a value for the dice roll: ", 65535, -65535);
+            }
+            else
+            {
+                roll = RandDiceRoll();
+            }
 # else
-            int roll = RandDiceRoll();
+            roll = RandDiceRoll();
 #endif
+            Console.WriteLine("{0} rolled a {1}.", players[playerno].name, roll);
             players[playerno].position += roll;
             Console.WriteLine("{0}'s new position on the board is {1}.", players[playerno].name, players[playerno].position);
         }
@@ -260,7 +298,7 @@ namespace TacticalSpaceCheeseRacer
                     {
                         PlayerTurn(playercount);
                         // Check if the current player has won.
-                        if (players[playercount].position >= 64)
+                        if (players[playercount].position >= BOARD_UP_BOUND)
                         {
                             gamewon = true;
                             Console.WriteLine("{0} has won the game!", players[playercount].name);
@@ -270,6 +308,10 @@ namespace TacticalSpaceCheeseRacer
                         {
                             // Do tactical stuff later.
                         }
+
+                        Console.Write("Press enter to continue...");
+                        Console.ReadLine();
+                        Console.WriteLine();
                     }
                 } while (!gamewon);
 
@@ -277,8 +319,8 @@ namespace TacticalSpaceCheeseRacer
                 replay = ReadYN("Do you want to play again?: ");
                 if (replay)
                 {
-                    bool old_names = ReadYN("Do you want to use the same names for players?: ");
-                    SetupGame(true, old_names);
+                    gamewon = false;
+                    SetupGame(true, ReadYN("Do you want to use the same names for players?: "));
                 }
 
             } while (replay);
