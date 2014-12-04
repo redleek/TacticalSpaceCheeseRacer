@@ -269,6 +269,51 @@ namespace TacticalSpaceCheeseRacer
             players[playerno].position += roll;
             Console.WriteLine("{0}'s new position on the board is {1}.", players[playerno].name, players[playerno].position);
         }
+
+        #region Tactical Dice Methods
+        /// <summary>
+        /// Sends the player who rolled the tactics dice back to the start of the board.
+        /// </summary>
+        /// <param name="playerno">The number of the current player.</param>
+        static void Power1(int playerno)
+        {
+            players[playerno].position = 0;
+            Console.WriteLine("{0} has had their engines exploded and are now back to square 0.", players[playerno].name);
+        }
+
+        /// <summary>
+        /// Sends all the rockets on the current square that the player who rolled the tactics dice is currently on.
+        /// </summary>
+        /// <param name="playerno">The number of the current player.</param>
+        static void Power2(int playerno)
+        {
+            int current_player_position = players[playerno].position;
+            for (int playercount = 0; playercount < no_of_players; playercount++)
+            {
+                if (players[playercount].position == current_player_position)
+                {
+                    players[playercount].position = 0;
+                    Console.WriteLine("{0} has had their engines exploded and are now back to square 0.", players[playercount].name);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Same as Power2 but the player who rolled does not become affected.
+        /// </summary>
+        /// <param name="playerno">The number if the current player.</param>
+        static void Power3(int playerno)
+        {
+            int current_player_position = players[playerno].position;
+            for (int playercount = 0; playercount < no_of_players; playercount++)
+            {
+                if (players[playercount].position == current_player_position)
+                {
+
+                }
+            }
+        }
+        #endregion
         #endregion
 
         static void Main(string[] args)
@@ -324,7 +369,7 @@ namespace TacticalSpaceCheeseRacer
                 }
 
             } while (replay);
-
+            
             /*  Testing functions
             SetupGame(false, false);
             players[0].name = "Freddie Mercury";
@@ -332,7 +377,7 @@ namespace TacticalSpaceCheeseRacer
             players[0].tact_roll_used = false;
             Console.WriteLine("{0} has a position of {1}", players[0].name, players[0].position);
             */
-
+            
             return;
         }
     }
