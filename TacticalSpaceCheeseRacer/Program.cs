@@ -168,12 +168,14 @@ namespace TacticalSpaceCheeseRacer
         {
             if (reinitialise)
             {
-                bool player_nums_same = ReadYN("Use same number of players? [Y/n]: ");
+                /*
+                bool player_nums_same = ReadYN("Use same number of players?: ");
                 if (player_nums_same)
                 {
                     Console.WriteLine("WARNING: Incomplete method parameter, still in development.");
                     return;
                 }
+                */
             }
             else
             {
@@ -231,7 +233,6 @@ namespace TacticalSpaceCheeseRacer
         }
         #endregion
 
-
         static void Main(string[] args)
         {
             // Parse the command line arguments given to the program.
@@ -247,25 +248,40 @@ namespace TacticalSpaceCheeseRacer
             // Set up the game for the first time. Reinitialise and use of old names will never need to be set on the first set up.
             SetupGame(false, false);
 
-            // Enter main game loop while the game has not been won.
+            // Loop so we can ask if the players want to play again.
+            bool replay;
             do
             {
-                for (int playercount = 0; playercount < no_of_players; playercount++)
+
+                // Enter main game loop while the game has not been won.
+                do
                 {
-                    PlayerTurn(playercount);
-                    // Check if the current player has won.
-                    if (players[playercount].position >= 64)
+                    for (int playercount = 0; playercount < no_of_players; playercount++)
                     {
-                        gamewon = true;
-                        Console.WriteLine("{0} has won the game!", players[playercount].name);
-                        break;
+                        PlayerTurn(playercount);
+                        // Check if the current player has won.
+                        if (players[playercount].position >= 64)
+                        {
+                            gamewon = true;
+                            Console.WriteLine("{0} has won the game!", players[playercount].name);
+                            break;
+                        }
+                        else
+                        {
+                            // Do tactical stuff later.
+                        }
                     }
-                    else
-                    {
-                        // Do tactical stuff later.
-                    }
+                } while (!gamewon);
+
+                // Ask if they want to play again and if they want to keep the same names.
+                replay = ReadYN("Do you want to play again?: ");
+                if (replay)
+                {
+                    bool old_names = ReadYN("Do you want to use the same names for players?: ");
+                    SetupGame(true, old_names);
                 }
-            } while (!gamewon);
+
+            } while (replay);
 
             /*  Testing functions
             SetupGame(false, false);
@@ -275,7 +291,6 @@ namespace TacticalSpaceCheeseRacer
             Console.WriteLine("{0} has a position of {1}", players[0].name, players[0].position);
             */
 
-            Console.ReadLine();
             return;
         }
     }
