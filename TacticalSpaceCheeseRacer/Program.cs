@@ -203,14 +203,6 @@ namespace TacticalSpaceCheeseRacer
                     players = new Player[no_of_players];
                     ReadNames();
                 }
-                /*
-                bool player_nums_same = ReadYN("Use same number of players?: ");
-                if (player_nums_same)
-                {
-                    Console.WriteLine("WARNING: Incomplete method parameter, still in development.");
-                    return;
-                }
-                */
             }
             else
             {
@@ -236,6 +228,15 @@ namespace TacticalSpaceCheeseRacer
         #endregion
 
         #region Gameplay Functions
+        /// <summary>
+        /// Prints the current position of the specified player on the board.
+        /// </summary>
+        /// <param name="playerno">The current player playing.</param>
+        static void PrintPosition(int playerno)
+        {
+            Console.WriteLine("{0}'s new position on the board is {1}.", players[playerno].name, players[playerno].position);
+        }
+
         /// <summary>
         /// Generates a psuedo random number for a dice roll.
         /// </summary>
@@ -267,7 +268,7 @@ namespace TacticalSpaceCheeseRacer
 #endif
             Console.WriteLine("{0} rolled a {1}.", players[playerno].name, roll);
             players[playerno].position += roll;
-            Console.WriteLine("{0}'s new position on the board is {1}.", players[playerno].name, players[playerno].position);
+            PrintPosition(playerno);
         }
 
         #region Tactical Dice Methods
@@ -309,9 +310,27 @@ namespace TacticalSpaceCheeseRacer
             {
                 if (players[playercount].position == current_player_position)
                 {
-
+                    if (!(playercount == playerno))
+                    {
+                        players[playercount].position = 0;
+                        Console.WriteLine("{0} has had their engines exploded and are now back to square 0.", players[playercount].name);
+                    }
+                    else
+                    {
+                        continue;
+                    }
                 }
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="playerno"></param>
+        static void Power4(int playerno)
+        {
+            players[playerno].position += 6;
+            Console.WriteLine("{0} has moved to square {1}.", players[playerno].name, players[playerno].position);
         }
         #endregion
         #endregion
@@ -352,6 +371,7 @@ namespace TacticalSpaceCheeseRacer
                         else
                         {
                             // Do tactical stuff later.
+                            //PrintPosition(playercount);
                         }
 
                         Console.Write("Press enter to continue...");
