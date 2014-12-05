@@ -38,6 +38,9 @@ namespace TacticalSpaceCheeseRacer
         // Initialise the 'won' game state to false so the main loop is enabled.
         static bool gamewon = false;
 
+        // Locations of all the cheese squares.
+        static int[] cheese_squares = new int[8] { 8, 15, 19, 28, 33, 45, 55, 59 };
+
         // Represents the status of debug mode
 # if DEBUG
         static bool debugmode = false;
@@ -387,6 +390,11 @@ namespace TacticalSpaceCheeseRacer
                 break;
             } while (true);
         }
+
+        static void TacticalRoll()
+        {
+            // Do stuff.
+        }
         #endregion
         #endregion
 
@@ -423,12 +431,19 @@ namespace TacticalSpaceCheeseRacer
                             Console.WriteLine("{0} has won the game!", players[playercount].name);
                             break;
                         }
-                        else
+
+                        // Check if the player is on a cheese square
+                        for (int item = 0; item < cheese_squares.Length; item++)
                         {
-                            // Do tactical stuff later.
-                            Power6(playercount);
-                            //PrintPosition(playercount);
+                            if (item == players[playercount].position)
+                            {
+                                TacticalRoll();
+                                players[playercount].tact_roll_used = true;
+                            }
                         }
+
+                        // Ask if the player wants to roll the tactics dice.
+                        PrintPosition(playercount);
 
                         Console.Write("Press enter to continue...");
                         Console.ReadLine();
@@ -445,7 +460,7 @@ namespace TacticalSpaceCheeseRacer
                 }
 
             } while (replay);
-            
+
             /*  Testing functions
             SetupGame(false, false);
             players[0].name = "Freddie Mercury";
@@ -454,7 +469,7 @@ namespace TacticalSpaceCheeseRacer
             Console.WriteLine("{0} has a position of {1}", players[0].name, players[0].position);
             Power5(0);
             */
-            
+
             return;
         }
     }
