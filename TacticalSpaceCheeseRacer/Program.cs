@@ -140,41 +140,28 @@ namespace TacticalSpaceCheeseRacer
         {
             try
             {
-                if (args == null)
+                switch (args[0])
                 {
-                    // Place holder so the else doesn't execute if args is null.
-                    return;
-                }
-            }
-            finally
-            {
-# if DEBUG
-                try
-                {
-                    // Enable the testing variables.
-                    if (args[0] == "--test-enable" || args[0] == "-t")
-                    {
+#if DEBUG
+                    case "--test-enable":
+                    case "-t":
                         // Allow automatic use of the testing input variables.
                         debugmode = true;
-                    }
-                }
-                catch
-                {
-                    // Leave blank to continue.
-                }
-# endif
-                try
-                {
-                    if (args[0] == "--help" || args[0] == "-h")
-                    {
-                        // Print out the command line help.
-                    }
-                }
-                catch
-                {
-                    // Leave blank to continue.
+                        break;
+#endif
+                    case "--help":
+                    case "-h":
+                        // Print out command line help.
+                        break;
+                    default:
+                        break;
                 }
             }
+            catch
+            {
+                // Ignore as there are no command line argumets to parse.
+            }
+
             return;
         }
 
@@ -230,16 +217,30 @@ namespace TacticalSpaceCheeseRacer
         }
         #endregion
 
-        #region Gameplay Functions
+        #region Visual Output Methods
         /// <summary>
         /// Prints the current position of the specified player on the board.
         /// </summary>
         /// <param name="playerno">The current player playing.</param>
-        static void PrintPosition(int playerno)
+        static void PrintPlayerPosition(int playerno)
         {
             Console.WriteLine("{0}'s new position on the board is {1}.", players[playerno].name, players[playerno].position);
         }
 
+        /// <summary>
+        /// Prints the current positions of all the players.
+        /// </summary>
+        static void PrintAllPositions()
+        {
+            Console.WriteLine("Players and their positions:");
+            for (int playercount = 0; playercount < no_of_players; playercount++)
+            {
+                Console.WriteLine("{0}. {1} - {2}", playercount + 1, players[playercount].name, players[playercount].position);
+            }
+        }
+        #endregion
+
+        #region Gameplay Functions
         /// <summary>
         /// Generates a psuedo random number for a dice roll.
         /// </summary>
@@ -271,7 +272,7 @@ namespace TacticalSpaceCheeseRacer
 #endif
             Console.WriteLine("{0} rolled a {1}.", players[playerno].name, roll);
             players[playerno].position += roll;
-            PrintPosition(playerno);
+            PrintPlayerPosition(playerno);
         }
 
         #region Tactical Dice Methods
@@ -345,11 +346,7 @@ namespace TacticalSpaceCheeseRacer
             // Use do while to be able to return back to top if user tries to move to their own position.
             do
             {
-                Console.WriteLine("Players and their positions:");
-                for (int playercount = 0; playercount < no_of_players; playercount++)
-                {
-                    Console.WriteLine("{0}. {1} - {2}", playercount + 1, players[playercount].name, players[playercount].position);
-                }
+                PrintAllPositions();
                 int newposition = ReadNumber("Please enter a player number to swap to: ", no_of_players, 1) - 1;
                 if (newposition == playerno)
                 {
@@ -357,7 +354,7 @@ namespace TacticalSpaceCheeseRacer
                     continue;
                 }
                 players[playerno].position = players[newposition].position;
-                PrintPosition(playerno);
+                PrintPlayerPosition(playerno);
                 break;
             } while (true);
         }
@@ -371,11 +368,7 @@ namespace TacticalSpaceCheeseRacer
             // Use do while to be able to return back to top if user tries to swap with themselves.
             do
             {
-                Console.WriteLine("Players and their positions:");
-                for (int playercount = 0; playercount < no_of_players; playercount++)
-                {
-                    Console.WriteLine("{0}. {1} - {2}", playercount + 1, players[playercount].name, players[playercount].position);
-                }
+                PrintAllPositions();
                 int playerno2swap = ReadNumber("Please enter a player number to swap with: ", 4, 1) - 1;
                 if (playerno2swap == playerno)
                 {
@@ -385,15 +378,56 @@ namespace TacticalSpaceCheeseRacer
                 int newposition = players[playerno2swap].position;
                 players[playerno2swap].position = players[playerno].position;
                 players[playerno].position = newposition;
-                PrintPosition(playerno2swap);
-                PrintPosition(playerno);
+                PrintPlayerPosition(playerno2swap);
+                PrintPlayerPosition(playerno);
                 break;
             } while (true);
         }
 
-        static void TacticalRoll()
+        /// <summary>
+        /// Manage and perform a Tactical roll for the player based on the dice roll they get.
+        /// </summary>
+        static void TacticalRoll(int playerno)
         {
-            // Do stuff.
+            Console.Write("Press enter to roll the tactical dice...");
+            Console.ReadLine();
+            int roll = 0;
+#if DEBUG
+            if (debugmode)
+            {
+                roll = ReadNumber("Please enter a value for the dice roll: ", 65535, -65535);
+            }
+            else
+            {
+                roll = RandDiceRoll();
+            }
+# else
+            roll = RandDiceRoll();
+#endif
+            Console.WriteLine("{0} rolled a {1}.", players[playerno].name, roll);
+
+            // Decide which tactical roll to use.
+            switch (roll)
+            {
+                case 1:
+                    Power1(playerno);
+                    break;
+                case 2:
+                    Power2(playerno);
+                    break;
+                case 3:
+                    Power3(playerno);
+                    break;
+                case 4:
+                    Power4(playerno);
+                    break;
+                case 5:
+                    Power5(playerno);
+                    break;
+                case 6:
+                    Power6(playerno);
+                    break;
+            }
         }
         #endregion
         #endregion
@@ -437,16 +471,27 @@ namespace TacticalSpaceCheeseRacer
                         {
                             if (cheese_squares[item] == players[playercount].position)
                             {
-                                TacticalRoll();
+                                Console.WriteLine("You have landed on a cheese square!");
+                                TacticalRoll(playercount);
                                 players[playercount].tact_roll_used = true;
                                 break;
                             }
                         }
 
                         // Ask if the player wants to roll the tactics dice.
+                        if (!players[playercount].tact_roll_used)
+                        {
+                            if (ReadYN("Do you want to roll the tactics dice?: "))
+                            {
+                                TacticalRoll(playercount);
+                            }
+                        }
 
-                        // End of turn reset.
-                        players[playercount].tact_roll_used = false;
+                        // Reset for end of turn.
+                        if (players[playercount].tact_roll_used)
+                        {
+                            players[playercount].tact_roll_used = false;
+                        }
 
                         Console.Write("Press enter to continue...");
                         Console.ReadLine();
