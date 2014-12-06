@@ -238,6 +238,17 @@ namespace TacticalSpaceCheeseRacer
                 Console.WriteLine("{0}. {1} - {2}", playercount + 1, players[playercount].name, players[playercount].position);
             }
         }
+
+        /// <summary>
+        /// Macro to clear the console to make it more visualy appealing and display
+        /// all important information such as positions of all the players.
+        /// </summary>
+        static void ResetConsole()
+        {
+            Console.Clear();
+            PrintAllPositions();
+            Console.WriteLine();
+        }
         #endregion
 
         #region Gameplay Functions
@@ -495,7 +506,7 @@ namespace TacticalSpaceCheeseRacer
 
                         Console.Write("Press enter to continue...");
                         Console.ReadLine();
-                        Console.WriteLine();
+                        ResetConsole();
                     }
                 } while (!gamewon);
 
