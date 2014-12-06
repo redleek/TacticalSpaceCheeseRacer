@@ -435,15 +435,18 @@ namespace TacticalSpaceCheeseRacer
                         // Check if the player is on a cheese square
                         for (int item = 0; item < cheese_squares.Length; item++)
                         {
-                            if (item == players[playercount].position)
+                            if (cheese_squares[item] == players[playercount].position)
                             {
                                 TacticalRoll();
                                 players[playercount].tact_roll_used = true;
+                                break;
                             }
                         }
 
                         // Ask if the player wants to roll the tactics dice.
-                        PrintPosition(playercount);
+
+                        // End of turn reset.
+                        players[playercount].tact_roll_used = false;
 
                         Console.Write("Press enter to continue...");
                         Console.ReadLine();
