@@ -235,7 +235,7 @@ namespace TacticalSpaceCheeseRacer
             Console.WriteLine("Players and their positions:");
             for (int playercount = 0; playercount < no_of_players; playercount++)
             {
-                Console.WriteLine("{0}. {1} - {2}", playercount + 1, players[playercount].name, players[playercount].position);
+                Console.WriteLine("{0})  {1}\t- {2}", playercount + 1, players[playercount].name, players[playercount].position);
             }
         }
 
@@ -284,6 +284,14 @@ namespace TacticalSpaceCheeseRacer
             Console.WriteLine("{0} rolled a {1}.", players[playerno].name, roll);
             players[playerno].position += roll;
             PrintPlayerPosition(playerno);
+
+            // Check if the dice roll was 6, if so, allow current player to throw the tactics dice for another player.
+            if (roll == 6)
+            {
+                Console.WriteLine("Because you rolled a 6, you can throw the tactics dice for another player:");
+                PrintAllPositions();
+                TacticalRoll(ReadNumber("Please enter a player number: ", MAX_PLAYERS, MIN_PLAYERS) - 1);
+            }
         }
 
         #region Tactical Dice Methods
@@ -309,7 +317,7 @@ namespace TacticalSpaceCheeseRacer
                 if (players[playercount].position == current_player_position)
                 {
                     players[playercount].position = 0;
-                    Console.WriteLine("{0} has had their engines exploded and are now back to square 0.", players[playercount].name);
+                    Console.WriteLine("{0} has had his/her engines exploded and are now back to square 0.", players[playercount].name);
                 }
             }
         }
@@ -329,10 +337,6 @@ namespace TacticalSpaceCheeseRacer
                     {
                         players[playercount].position = 0;
                         Console.WriteLine("{0} has had their engines exploded and are now back to square 0.", players[playercount].name);
-                    }
-                    else
-                    {
-                        continue;
                     }
                 }
             }
@@ -400,7 +404,7 @@ namespace TacticalSpaceCheeseRacer
         /// </summary>
         static void TacticalRoll(int playerno)
         {
-            Console.Write("Press enter to roll the tactical dice...");
+            Console.Write("Press enter to roll the tactical dice... ");
             Console.ReadLine();
             int roll = 0;
 #if DEBUG
@@ -480,6 +484,12 @@ namespace TacticalSpaceCheeseRacer
                         // Check if the player is on a cheese square
                         for (int item = 0; item < cheese_squares.Length; item++)
                         {
+                            // Break out early if cheese square position is greater than player position.
+                            if (cheese_squares[item] >= players[playercount].position)
+                            {
+                                break;
+                            }
+
                             if (cheese_squares[item] == players[playercount].position)
                             {
                                 Console.WriteLine("You have landed on a cheese square!");
@@ -504,7 +514,7 @@ namespace TacticalSpaceCheeseRacer
                             players[playercount].tact_roll_used = false;
                         }
 
-                        Console.Write("Press enter to continue...");
+                        Console.Write("Press enter to continue... ");
                         Console.ReadLine();
                         ResetConsole();
                     }
