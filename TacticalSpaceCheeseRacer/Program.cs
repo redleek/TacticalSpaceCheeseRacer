@@ -39,7 +39,7 @@ namespace TacticalSpaceCheeseRacer
         static bool gamewon = false;
 
         // Locations of all the cheese squares.
-        const int[] cheese_squares = new int[8] { 8, 15, 19, 28, 33, 45, 55, 59 };
+        static int[] cheese_squares = new int[8] { 8, 15, 19, 28, 33, 45, 55, 59 };
 
         // Represents the status of debug mode
 # if DEBUG
