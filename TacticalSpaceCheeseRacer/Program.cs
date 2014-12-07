@@ -500,6 +500,11 @@ namespace TacticalSpaceCheeseRacer
                                 break;
                             }
                         }
+                        // Re-break as we can't double-break out of 2 for loops.
+                        if (gamewon)
+                        {
+                            break;
+                        }
 
                         // Check if the player is on a cheese square
                         for (int item = 0; item < cheese_squares.Length; item++)
