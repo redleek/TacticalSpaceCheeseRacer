@@ -235,7 +235,7 @@ namespace TacticalSpaceCheeseRacer
             Console.WriteLine("Players and their positions:");
             for (int playercount = 0; playercount < no_of_players; playercount++)
             {
-                Console.WriteLine("{0})  {1}\t- {2}", playercount + 1, players[playercount].name, players[playercount].position);
+                Console.WriteLine("{0})  {1} \t- {2}", playercount + 1, players[playercount].name, players[playercount].position);
             }
         }
 
