@@ -24,7 +24,7 @@ namespace TacticalSpaceCheeseRacer
         };
 
         // Define constants we will want to use throughout the program.
-        const int MAX_PLAYERS = 5;
+        const int MAX_PLAYERS = 4;
         const int MIN_PLAYERS = 2;
         const int BOARD_UP_BOUND = 64;
         const int BOARD_LWR_BOUND = 0;
