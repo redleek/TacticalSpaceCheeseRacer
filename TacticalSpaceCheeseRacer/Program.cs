@@ -24,7 +24,7 @@ namespace TacticalSpaceCheeseRacer
         };
 
         // Define constants we will want to use throughout the program.
-        const int MAX_PLAYERS = 4;
+        const int MAX_PLAYERS = 5;
         const int MIN_PLAYERS = 2;
         const int BOARD_UP_BOUND = 64;
         const int BOARD_LWR_BOUND = 0;
@@ -235,7 +235,7 @@ namespace TacticalSpaceCheeseRacer
             Console.WriteLine("Players and their positions:");
             for (int playercount = 0; playercount < no_of_players; playercount++)
             {
-                Console.WriteLine("{0})  {1} \t- {2}", playercount + 1, players[playercount].name, players[playercount].position);
+                Console.WriteLine("{0})  {1} \t\t- {2}", playercount + 1, players[playercount].name, players[playercount].position);
             }
         }
 
@@ -290,7 +290,25 @@ namespace TacticalSpaceCheeseRacer
             {
                 Console.WriteLine("Because you rolled a 6, you can throw the tactics dice for another player:");
                 PrintAllPositions();
-                TacticalRoll(ReadNumber("Please enter a player number: ", MAX_PLAYERS, MIN_PLAYERS) - 1);
+                TacticalRoll(ReadNumber("Please enter a player number: ", no_of_players, 1) - 1);
+            }
+        }
+
+        /// <summary>
+        /// Check if the current player has won the game/at or over the board limit.
+        /// </summary>
+        /// <param name="playerno">The number of the current player.</param>
+        /// <returns>Wether or not the player has won.</returns>
+        static bool CheckWin(int playerno)
+        {
+            if (players[playerno].position >= BOARD_UP_BOUND)
+            {
+                Console.WriteLine("{0} has won the game!", players[playerno].name);
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -362,7 +380,7 @@ namespace TacticalSpaceCheeseRacer
             do
             {
                 PrintAllPositions();
-                int newposition = ReadNumber("Please enter a player number to swap to: ", no_of_players, 1) - 1;
+                int newposition = ReadNumber("Please enter a player number to move to: ", no_of_players, 1) - 1;
                 if (newposition == playerno)
                 {
                     Console.WriteLine("You cannot move to the position you are already on.");
@@ -384,7 +402,7 @@ namespace TacticalSpaceCheeseRacer
             do
             {
                 PrintAllPositions();
-                int playerno2swap = ReadNumber("Please enter a player number to swap with: ", 4, 1) - 1;
+                int playerno2swap = ReadNumber("Please enter a player number to swap with: ", no_of_players, 1) - 1;
                 if (playerno2swap == playerno)
                 {
                     Console.WriteLine("You cannot swap position with yourself.");
@@ -473,12 +491,14 @@ namespace TacticalSpaceCheeseRacer
                     for (int playercount = 0; playercount < no_of_players; playercount++)
                     {
                         PlayerTurn(playercount);
-                        // Check if the current player has won.
-                        if (players[playercount].position >= BOARD_UP_BOUND)
+                        // Check if the current player (or player we have rolled the six power for) has won.
+                        for (int playercount2 = 0; playercount2 < no_of_players; playercount2++)
                         {
-                            gamewon = true;
-                            Console.WriteLine("{0} has won the game!", players[playercount].name);
-                            break;
+                            if (CheckWin(playercount2))
+                            {
+                                gamewon = true;
+                                break;
+                            }
                         }
 
                         // Check if the player is on a cheese square
@@ -499,6 +519,12 @@ namespace TacticalSpaceCheeseRacer
                             }
                         }
 
+                        if (CheckWin(playercount))
+                        {
+                            gamewon = true;
+                            break;
+                        }
+
                         // Ask if the player wants to roll the tactics dice.
                         if (!players[playercount].tact_roll_used)
                         {
@@ -506,6 +532,12 @@ namespace TacticalSpaceCheeseRacer
                             {
                                 TacticalRoll(playercount);
                             }
+                        }
+
+                        if (CheckWin(playercount))
+                        {
+                            gamewon = true;
+                            break;
                         }
 
                         // Reset for end of turn.
