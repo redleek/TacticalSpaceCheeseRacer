@@ -510,7 +510,7 @@ namespace TacticalSpaceCheeseRacer
                         for (int item = 0; item < cheese_squares.Length; item++)
                         {
                             // Break out early if cheese square position is greater than player position.
-                            if (cheese_squares[item] >= players[playercount].position)
+                            if (cheese_squares[item] > players[playercount].position)
                             {
                                 break;
                             }
