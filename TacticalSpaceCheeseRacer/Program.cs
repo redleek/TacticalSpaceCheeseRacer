@@ -567,15 +567,6 @@ namespace TacticalSpaceCheeseRacer
 
             } while (replay);
 
-            /*  Testing functions
-            SetupGame(false, false);
-            players[0].name = "Freddie Mercury";
-            players[0].position = 0;
-            players[0].tact_roll_used = false;
-            Console.WriteLine("{0} has a position of {1}", players[0].name, players[0].position);
-            Power5(0);
-            */
-
             return;
         }
     }
