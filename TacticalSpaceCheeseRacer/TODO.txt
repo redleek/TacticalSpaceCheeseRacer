@@ -1,10 +1,4 @@
 USER INTERFACE
 ==============
 1. Create welcome screen.
-2. Create the user help option from the command line.
-3. Make a smooth/juddery typing method.
-
-MECHANICS
-=========
-1. Implement tactical dice
-2. Implement an enhancement.
+2. Finish more methods for formatted string printing with `Print' method.

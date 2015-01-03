@@ -43,9 +43,9 @@ namespace TacticalSpaceCheeseRacer
     static int[] cheese_squares = new int[8] { 8, 15, 19, 28, 33, 45, 55, 59 };
     
     // Represents the status of debug mode
-# if DEBUG
+#if DEBUG
     static bool debugmode = false;
-# endif
+#endif
     
     // Create an instance of random number so we don't get the same values in a short space of time.
     static Random randomnum = new Random();
@@ -153,7 +153,16 @@ namespace TacticalSpaceCheeseRacer
 	    case "--help":
 	    case "-h":
 	      // Print out command line help.
-	      StreamReader reader = new StreamReader(@"..\README.md");
+	      StreamReader reader;
+	      try
+		{
+		  reader = new StreamReader(@"README.md");
+		}
+	    catch
+	      {
+		PrintLine("Help file `README.md' not found! If found, please place in the same directory as the program.");
+		Environment.Exit(0);
+	      }
 	    while (true)
 	      {
 		string line = reader.ReadLine();
@@ -210,21 +219,23 @@ namespace TacticalSpaceCheeseRacer
       else
 	{
 	  no_of_players = ReadNumber("Please enter the number of players: ", MAX_PLAYERS, MIN_PLAYERS);
-	  //Console.WriteLine("The number of players is: {0}", no_of_players);
+#if DEBUG
+	  Console.WriteLine("The number of players is: {0}", no_of_players);
+#endif
 	  players = new Player[no_of_players];
 	  
 	  // Read in the players' names.
 	  ReadNames();
 	  
 	  // Check that the names are being stored correctly.
-# if DEBUG
+#if DEBUG
 	  Console.WriteLine("Stored players:");
 	  for (int playercount = 0; playercount < no_of_players; playercount++)
 	    {
                     Console.WriteLine(players[playercount].name);
 	    }
 	  Console.WriteLine();
-# endif
+#endif
 	  
 	}
     }
@@ -314,7 +325,7 @@ namespace TacticalSpaceCheeseRacer
 	{
 	  roll = RandDiceRoll();
 	}
-# else
+#else
       roll = RandDiceRoll();
 #endif
       Console.WriteLine("{0} rolled a {1}.", players[playerno].name, roll);
@@ -324,9 +335,20 @@ namespace TacticalSpaceCheeseRacer
       // Check if the dice roll was 6, if so, allow current player to throw the tactics dice for another player.
       if (roll == 6)
 	{
-	  PrintLine("Because you rolled a 6, you can throw the tactics dice for another player:");
-	  PrintAllPositions();
-	  TacticalRoll(ReadNumber("Please enter a player number: ", no_of_players, 1) - 1);
+	  // Don't allow the player to roll the tactics dice for themselves.
+	  do
+	    {
+	      PrintLine("Because you rolled a 6, you can throw the tactics dice for another player:");
+	      PrintAllPositions();
+	      int roll_choice = ReadNumber("Please enter a player number: ", no_of_players, 1) - 1;
+	      if (roll_choice == playerno)
+		{
+		  PrintLine("You cannot roll for yourself.");
+		  continue;
+		}
+	      TacticalRoll(roll_choice);
+	      break;
+	    } while (true);
 	}
     }
     
@@ -470,7 +492,7 @@ namespace TacticalSpaceCheeseRacer
 	{
 	  roll = RandDiceRoll();
 	}
-# else
+#else
       roll = RandDiceRoll();
 #endif
       Console.WriteLine("{0} rolled a {1}.", players[playerno].name, roll);
@@ -506,15 +528,15 @@ namespace TacticalSpaceCheeseRacer
       // Parse the command line arguments given to the program.
       ParseCLA(args);
       
-      # if DEBUG
-	if (debugmode)
-	  {
-	    PrintLine("Entering in Debug mode...");
-	  }
-      # endif
+#if DEBUG
+      if (debugmode)
+	{
+	  PrintLine("Entering in Debug mode...");
+	}
+#endif
 	
-	// Set up the game for the first time. Reinitialise and use of old names will never need to be set on the first set up.
-	SetupGame(false, false);
+      // Set up the game for the first time. Reinitialise and use of old names will never need to be set on the first set up.
+      SetupGame(false, false);
       
       // Loop so we can ask if the players want to play again.
       bool replay;
