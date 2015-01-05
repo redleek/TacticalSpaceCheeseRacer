@@ -139,50 +139,51 @@ namespace TacticalSpaceCheeseRacer
     /// <param name="args">Array that contains the arguments.</param>
     static void ParseCLA(string[] args)
     {
-      try
-	{
-	  switch (args[0])
+	  for (int argument = 0; argument < args.Length; argument++)
 	    {
 #if DEBUG
-	    case "--test-enable":
-	    case "-t":
-	      // Allow automatic use of the testing input variables.
-	      debugmode = true;
-	    break;
+	      Console.WriteLine("DEBUG ARGS: On argument number: {0}", argument);
 #endif
-	    case "--help":
-	    case "-h":
-	      // Print out command line help.
-	      StreamReader reader;
-	      try
+	      switch (args[argument])
 		{
-		  reader = new StreamReader(@"README.md");
+#if DEBUG
+		case "--test-enable":
+		case "-t":
+		  // Allow automatic use of the testing input variables.
+		  debugmode = true;
+		  break;
+#endif
+		case "--help":
+		case "-h":
+		  // Print out command line help.
+		  StreamReader reader;
+		  try
+		    {
+		      reader = new StreamReader(@"README.md");
+		    }
+		  catch
+		    {
+		      PrintLine("Help file `README.md' not found! If found, please place in the same directory as the program.");
+		      Environment.Exit(0);
+		    }
+		  while (true)
+		    {
+		      string line = reader.ReadLine();
+		      if (line == null)
+			{
+			  break;
+			}
+		      PrintLine(line);
+		    }
+		  reader.Close();
+		  Environment.Exit(0);
+		  break;
+		default:
+		  Console.WriteLine("ERROR: \"{0}\" is not a known argument.", args[argument]);
+		  Environment.Exit(1);
+		  break;
 		}
-	    catch
-	      {
-		PrintLine("Help file `README.md' not found! If found, please place in the same directory as the program.");
-		Environment.Exit(0);
-	      }
-	    while (true)
-	      {
-		string line = reader.ReadLine();
-		if (line == null)
-		  {
-		    break;
-		  }
-		PrintLine(line);
-	      }
-	    reader.Close();
-	    Environment.Exit(0);
-	    break;
-	    default:
-	      break;
 	    }
-	}
-      catch
-	{
-	  // Ignore as there are no command line argumets to parse.
-	}
       
       return;
     }
