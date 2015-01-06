@@ -283,7 +283,13 @@ namespace TacticalSpaceCheeseRacer
     {
       foreach (char character in Text)
 	{
-	  System.Threading.Thread.Sleep(randomnum.Next(0, 250));
+	  System.Threading.Thread.Sleep(randomnum.Next(
+#if DEBUG
+						       0, 0)
+#else
+						       0, 250)
+#endif
+					);
 	  Console.Write(character);
 	}
     }
