@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 /*
 using System.Collections.Generic;
 using System.Linq;
@@ -156,10 +155,10 @@ namespace TacticalSpaceCheeseRacer
 		case "--help":
 		case "-h":
 		  // Print out command line help.
-		  StreamReader reader;
+		  System.IO.StreamReader reader;
 		  try
 		    {
-		      reader = new StreamReader(@"README.md");
+		      reader = new System.IO.StreamReader(@"README.md");
 		    }
 		  catch
 		    {
